@@ -2,6 +2,10 @@
 
 **An AI civic-operations agent for Indore. The AI proposes; a deterministic policy kernel decides.**
 
+**Live demo:** https://nagarsetu-pylp.onrender.com (press **▶ Guided demo**, top right) · Team Vidyut
+
+> The free Render instance sleeps when idle; the first visit can take up to a minute to wake up.
+
 BUILD 2036 (TiE Global Summit 2026) · Frontier 06 *The Rise of New India* (civic governance, clean urban
 infrastructure, Indore & MP) with Frontier 01 *Applied AI & Agentic Intelligence*.
 
