@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-# tests never call Claude: the offline classifier is deterministic
+# tests never call the AI API: the offline classifier is deterministic
 os.environ["ANTHROPIC_API_KEY"] = ""
 os.environ["ANTHROPIC_AUTH_TOKEN"] = ""
 

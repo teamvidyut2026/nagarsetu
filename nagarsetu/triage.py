@@ -1,4 +1,4 @@
-"""AI triage layer (Claude). It reads untrusted citizen text and photos and PROPOSES.
+"""AI triage layer (LLM). It reads untrusted citizen text and photos and PROPOSES.
 
 It never routes, sets SLAs, closes tickets or touches the database. Its output is a
 proposal that the Civic Policy Kernel (kernel.py) accepts, tightens or overrides.
@@ -79,9 +79,9 @@ class Triage:
 
     @property
     def mode(self) -> str:
-        return f"claude ({self.model})" if self.client else "offline (bilingual rules)"
+        return f"live AI ({self.model})" if self.client else "offline (bilingual rules)"
 
-    # --- Claude -------------------------------------------------------------
+    # --- LLM ----------------------------------------------------------------
     def _ask(self, system: str, content: list | str, schema: dict | None = None,
              max_tokens: int = 1500) -> str | None:
         if not self.client:
@@ -131,7 +131,7 @@ class Triage:
             try:
                 out = json.loads(raw)
                 out["confidence"] = max(0.0, min(1.0, float(out["confidence"])))
-                out["source"] = "claude"
+                out["source"] = "ai"
                 out["used_photo"] = bool(img)
                 return out
             except (ValueError, KeyError, TypeError):
@@ -144,7 +144,7 @@ class Triage:
         text = self._ask(BRIEF_SYSTEM, json.dumps(stats, ensure_ascii=False, default=str),
                          max_tokens=700)
         if text:
-            return text.strip(), "claude"
+            return text.strip(), "ai"
         return template_brief(stats), "template"
 
 

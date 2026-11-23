@@ -86,9 +86,9 @@ $$("[data-go]").forEach((a) => a.addEventListener("click", (e) => { e.preventDef
 /* ---------------- header ---------------- */
 function renderHeader() {
   const m = S.meta.mode;
-  const live = m.startsWith("claude");
-  $("#aiMode").innerHTML = `<span class="dot"></span><span>${live ? "Claude live" : "Offline AI"}</span>`;
-  $("#aiMode").title = m + (live ? "" : ": set ANTHROPIC_API_KEY to use Claude (photo + multilingual triage)");
+  const live = !m.startsWith("offline");
+  $("#aiMode").innerHTML = `<span class="dot"></span><span>${live ? "AI live" : "Offline AI"}</span>`;
+  $("#aiMode").title = m + (live ? "" : ": set ANTHROPIC_API_KEY to turn on the AI layer (photo + multilingual triage)");
   $("#clock").textContent = "🕒 " + fmtTs(S.meta.now);
 }
 
@@ -435,7 +435,7 @@ $("#briefBtn").addEventListener("click", async () => {
   try {
     const r = await api("/api/brief");
     $("#briefText").textContent = r.text;
-    $("#briefSrc").textContent = r.source === "claude" ? "Written by Claude from kernel numbers" : "Template brief (Claude not connected)";
+    $("#briefSrc").textContent = r.source === "ai" ? "Written by the AI from kernel numbers" : "Template brief (AI not connected)";
   } catch (e) { toast(e.message, true); } finally { b.disabled = false; b.textContent = "Regenerate"; }
 });
 

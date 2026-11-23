@@ -2,14 +2,14 @@
 
 **An AI civic-operations agent for Indore. The AI proposes; a deterministic policy kernel decides.**
 
-**Live demo:** https://nagarsetu-pylp.onrender.com (press **▶ Guided demo**, top right) · Team Vidyut
+**Live demo:** https://nagarsetu-pylp.onrender.com (press **▶ Guided demo**, top right) · **Demo video:** https://youtu.be/U9Li9GHRTyc · Team Vidyut
 
 > The free Render instance sleeps when idle; the first visit can take up to a minute to wake up.
 
 BUILD 2036 (TiE Global Summit 2026) · Frontier 06 *The Rise of New India* (civic governance, clean urban
 infrastructure, Indore & MP) with Frontier 01 *Applied AI & Agentic Intelligence*.
 
-Citizens report a civic problem in Hindi, English or Hinglish, as text, voice or photo. Claude reads the report
+Citizens report a civic problem in Hindi, English or Hinglish, as text, voice or photo. The AI layer (a large language model) reads the report
 and proposes a category, a severity, any hazards and a bilingual summary. It also flags spam and prompt
 injection. A **Civic Policy Kernel** then applies published rules from `policy.json`:
 
@@ -32,7 +32,7 @@ python run.py --reseed        # regenerate the demo data
 python -m pytest -q           # 27 tests, fully offline
 ```
 
-Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to turn on Claude, which adds photo understanding,
+Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` to turn on the AI layer, which adds photo understanding,
 free-form multilingual triage and the written brief. Without a key everything still works, using a bilingual
 keyword classifier and a template brief. A ward office with poor connectivity is a real deployment case.
 
@@ -40,7 +40,7 @@ keyword classifier and a template brief. A ward office with poor connectivity is
 
 ```mermaid
 flowchart LR
-  C[Citizen<br/>text · voice · photo · GPS] --> T[triage.py<br/>Claude or offline rules]
+  C[Citizen<br/>text · voice · photo · GPS] --> T[triage.py<br/>LLM or offline rules]
   T -- proposal --> K[kernel.py<br/>Civic Policy Kernel]
   P[(policy.json)] --> K
   K -- routed --> D{dedup<br/>150 m · 7 days}
@@ -57,7 +57,7 @@ flowchart LR
 
 | Layer | File | Can it change a ticket? |
 |---|---|---|
-| AI triage (Claude, structured outputs, vision) | `nagarsetu/triage.py` | **No.** It returns a proposal and cannot import the kernel or the store (a test enforces this). |
+| AI triage (LLM, structured outputs, vision) | `nagarsetu/triage.py` | **No.** It returns a proposal and cannot import the kernel or the store (a test enforces this). |
 | Civic Policy Kernel | `nagarsetu/kernel.py` | Decides intake, guards every state transition, returns the rule ids that fired. |
 | Orchestration + analytics | `nagarsetu/service.py` | Runs the pipeline: dedup, crew pick, SLA sweep, hotspots, breach forecast. |
 | Storage | `nagarsetu/store.py` | SQLite tickets plus an append-only event log, and a demo clock. |

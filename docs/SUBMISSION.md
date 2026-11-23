@@ -27,7 +27,7 @@ accountability.
 
 NagarSetu splits the work:
 
-| The AI (Claude) does | The Civic Policy Kernel does |
+| The AI does | The Civic Policy Kernel does |
 |---|---|
 | Reads Hindi / English / Hinglish text, voice transcripts and photos | Maps category to department and computes the SLA from published rules |
 | Proposes category, severity and hazards, with a confidence score | Applies hazard severity floors (live wire is always 5) |
@@ -83,7 +83,7 @@ could become a shared component for municipal Digital Public Infrastructure acro
 ## 5. Architecture
 
 See the diagram and layer table in the [README](../README.md#architecture). Stack: Python, FastAPI, SQLite,
-Anthropic Claude (structured JSON outputs + vision), vanilla JS, Leaflet/OpenStreetMap.
+a large language model via the Anthropic API (structured JSON outputs + vision), vanilla JS, Leaflet/OpenStreetMap.
 
 ## 6. Honest limits
 
@@ -97,5 +97,5 @@ Anthropic Claude (structured JSON outputs + vision), vanilla JS, Leaflet/OpenStr
 ## 7. Links (fill in)
 
 - Repository: https://github.com/teamvidyut2026/nagarsetu
-- Demo video: …
+- Demo video: https://youtu.be/U9Li9GHRTyc
 - Live demo: https://nagarsetu-pylp.onrender.com
