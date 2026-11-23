@@ -67,10 +67,13 @@ class Triage:
     def __init__(self) -> None:
         self.client = None
         self.model = MODEL
-        if os.environ.get("ANTHROPIC_API_KEY") or os.environ.get("ANTHROPIC_AUTH_TOKEN"):
+        # keys pasted into dashboards often carry a trailing newline, which breaks the auth header
+        key = (os.environ.get("ANTHROPIC_API_KEY") or "").strip()
+        token = (os.environ.get("ANTHROPIC_AUTH_TOKEN") or "").strip()
+        if key or token:
             try:
                 import anthropic
-                self.client = anthropic.Anthropic()
+                self.client = anthropic.Anthropic(api_key=key or None, auth_token=token or None)
             except Exception:
                 self.client = None
 
