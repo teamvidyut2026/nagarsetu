@@ -1,0 +1,56 @@
+{
+  "_comment": "Civic Policy Kernel configuration. Every routing, SLA and escalation rule lives here, not in the AI.",
+  "categories": {
+    "garbage":       {"label": "Garbage / missed pickup",   "label_hi": "कचरा / गाड़ी नहीं आई",   "dept": "SWM",        "sla_hours": 24},
+    "drainage":      {"label": "Drain / sewer overflow",    "label_hi": "नाली / सीवर ओवरफ्लो",  "dept": "SEWERAGE",   "sla_hours": 24},
+    "water_supply":  {"label": "Water supply / leakage",    "label_hi": "पानी सप्लाई / लीकेज",    "dept": "WATER",      "sla_hours": 12},
+    "streetlight":   {"label": "Streetlight not working",   "label_hi": "स्ट्रीट लाइट बंद",         "dept": "ELECTRICAL", "sla_hours": 48},
+    "road_pothole":  {"label": "Pothole / damaged road",    "label_hi": "गड्ढा / टूटी सड़क",        "dept": "PWD",        "sla_hours": 72},
+    "stray_animals": {"label": "Stray animals",             "label_hi": "आवारा पशु",               "dept": "HEALTH",     "sla_hours": 24},
+    "public_toilet": {"label": "Public toilet unclean",     "label_hi": "सार्वजनिक शौचालय गंदा",   "dept": "SWM",        "sla_hours": 12},
+    "tree_fall":     {"label": "Fallen / dangerous tree",   "label_hi": "गिरा / खतरनाक पेड़",       "dept": "GARDEN",     "sla_hours": 12},
+    "encroachment":  {"label": "Encroachment on road",      "label_hi": "सड़क पर अतिक्रमण",         "dept": "REMOVAL",    "sla_hours": 96},
+    "other":         {"label": "Other civic issue",         "label_hi": "अन्य समस्या",             "dept": "WARD",       "sla_hours": 72}
+  },
+  "departments": {
+    "SWM":        "Solid Waste Management",
+    "SEWERAGE":   "Drainage & Sewerage",
+    "WATER":      "Water Works (Narmada supply)",
+    "ELECTRICAL": "Electrical (Streetlights)",
+    "PWD":        "Roads & Public Works",
+    "HEALTH":     "Health & Veterinary",
+    "GARDEN":     "Garden Department",
+    "REMOVAL":    "Encroachment Removal Cell",
+    "WARD":       "Ward Office"
+  },
+  "severity_sla_factor": {"1": 2.0, "2": 1.5, "3": 1.0, "4": 0.5, "5": 0.25},
+  "hazards": {
+    "electrical_hazard": {"label": "Live wire / electrical danger", "min_severity": 5},
+    "flooding":          {"label": "Waterlogging / flooding",       "min_severity": 4},
+    "child_safety":      {"label": "Risk to children / school",     "min_severity": 4},
+    "health_hazard":     {"label": "Disease / contamination risk",  "min_severity": 4},
+    "traffic_block":     {"label": "Blocks traffic",                "min_severity": 3}
+  },
+  "triage": {
+    "min_confidence": 0.6,
+    "suspicious_goes_to_review": true
+  },
+  "dedup": {
+    "radius_m": 150,
+    "window_hours": 168,
+    "supporter_severity_steps": [5, 15]
+  },
+  "escalation": {
+    "at_risk_ratio": 0.75,
+    "levels": [
+      {"level": 1, "after_sla_ratio": 0.0, "role": "Ward Officer"},
+      {"level": 2, "after_sla_ratio": 1.0, "role": "Zonal Officer"},
+      {"level": 3, "after_sla_ratio": 2.0, "role": "Additional Commissioner"}
+    ]
+  },
+  "closure": {
+    "proof_radius_m": 200,
+    "auto_confirm_hours": 48,
+    "reopen_severity_bump": 1
+  }
+}

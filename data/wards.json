@@ -1,0 +1,29 @@
+{
+  "_comment": "Indore localities used by the prototype. Centroids are approximate; zones are illustrative groupings, not official IMC zone numbers.",
+  "wards": [
+    {"id": "W01", "name": "Rajwada",         "zone": "Central", "lat": 22.7186, "lng": 75.8553},
+    {"id": "W02", "name": "Sarafa",          "zone": "Central", "lat": 22.7203, "lng": 75.8512},
+    {"id": "W03", "name": "Chhawni",         "zone": "Central", "lat": 22.7090, "lng": 75.8680},
+    {"id": "W04", "name": "Palasia",         "zone": "Central", "lat": 22.7245, "lng": 75.8840},
+    {"id": "W05", "name": "Vijay Nagar",     "zone": "East",    "lat": 22.7533, "lng": 75.8937},
+    {"id": "W06", "name": "Nipania",         "zone": "East",    "lat": 22.7630, "lng": 75.9180},
+    {"id": "W07", "name": "Khajrana",        "zone": "East",    "lat": 22.7330, "lng": 75.9080},
+    {"id": "W08", "name": "Bengali Square",  "zone": "East",    "lat": 22.7160, "lng": 75.9030},
+    {"id": "W09", "name": "Malharganj",      "zone": "West",    "lat": 22.7230, "lng": 75.8320},
+    {"id": "W10", "name": "Gandhi Nagar",    "zone": "West",    "lat": 22.7360, "lng": 75.7950},
+    {"id": "W11", "name": "Banganga",        "zone": "North",   "lat": 22.7470, "lng": 75.8400},
+    {"id": "W12", "name": "Sukhliya",        "zone": "North",   "lat": 22.7560, "lng": 75.8620},
+    {"id": "W13", "name": "Bhawarkua",       "zone": "South",   "lat": 22.6930, "lng": 75.8650},
+    {"id": "W14", "name": "Annapurna",       "zone": "South",   "lat": 22.6970, "lng": 75.8330},
+    {"id": "W15", "name": "Sudama Nagar",    "zone": "South",   "lat": 22.6950, "lng": 75.8230},
+    {"id": "W16", "name": "Rau",             "zone": "South",   "lat": 22.6390, "lng": 75.8110}
+  ],
+  "crews_per_dept_zone": {
+    "SWM": 2, "SEWERAGE": 1, "WATER": 1, "ELECTRICAL": 1, "PWD": 1,
+    "HEALTH": 1, "GARDEN": 1, "REMOVAL": 1, "WARD": 1
+  },
+  "avg_handle_hours": {
+    "SWM": 3, "SEWERAGE": 6, "WATER": 5, "ELECTRICAL": 4, "PWD": 10,
+    "HEALTH": 4, "GARDEN": 5, "REMOVAL": 8, "WARD": 6
+  }
+}

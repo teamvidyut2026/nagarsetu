@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NagarSetu · Indore</title>
+  <meta name="description" content="AI civic-operations agent for Indore: citizens report in any language, the AI proposes, a deterministic policy kernel decides.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c2410c'/%3E%3Ctext x='16' y='22' font-size='16' text-anchor='middle' fill='white' font-family='Arial' font-weight='bold'%3EN%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="top__in">
+    <a class="brand" href="#" data-go="citizen">
+      <span class="brand__mark">न</span>
+      <span><span class="brand__name">NagarSetu</span><br><span class="brand__sub">नगर सेतु · Indore civic agent</span></span>
+    </a>
+    <nav class="tabs" role="tablist">
+      <button class="tab" role="tab" data-view="citizen" aria-selected="true">Citizen</button>
+      <button class="tab" role="tab" data-view="command" aria-selected="false">Command Center</button>
+      <button class="tab" role="tab" data-view="crew" aria-selected="false">Field Crew</button>
+      <button class="tab" role="tab" data-view="how" aria-selected="false">How it works</button>
+    </nav>
+    <div class="top__right">
+      <button class="btn btn--tour" id="tourBtn" title="A guided walkthrough that drives the real app">▶ Guided demo</button>
+      <span class="pill pill--ai" id="aiMode" title="Which AI layer is proposing"><span class="dot"></span><span>AI</span></span>
+      <span class="pill" id="clock" title="Demo clock">--</span>
+      <button class="iconbtn" id="themeBtn" title="Toggle light / dark" aria-label="Toggle theme">◐</button>
+      <button class="iconbtn" id="sizeBtn" title="Larger text" aria-label="Larger text" aria-pressed="false"><b>A+</b></button>
+      <button class="iconbtn" id="langBtn" title="हिंदी / English" aria-label="Switch language">हिंदी</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ======================= CITIZEN ======================= -->
+  <section class="view active" id="view-citizen">
+    <div class="hero">
+      <div>
+        <h1>Report a civic problem in your own words</h1>
+        <p class="muted">Hindi, English or Hinglish. Type, speak or add a photo. The AI reads it, and the city's
+          published rules decide where it goes and how fast it must be fixed.</p>
+      </div>
+    </div>
+    <div class="grid cols-2">
+      <div class="card">
+        <form id="reportForm" autocomplete="off">
+          <div class="card__head"><h2>New complaint · नई शिकायत</h2>
+            <button type="button" class="btn btn--sm mic" id="micBtn" title="Speak in Hindi or English">🎙 Speak</button></div>
+          <textarea id="rText" required minlength="5" maxlength="2000"
+            placeholder="e.g. Hamari gali me 3 din se kachra gaadi nahi aayi, bahut badbu aa rahi hai..."></textarea>
+          <div class="chips" id="examples" style="margin-top:8px"></div>
+
+          <label>Photo (optional)</label>
+          <div class="photo-drop" id="photoDrop" tabindex="0">
+            <img id="photoPrev" class="hidden" alt="Selected photo preview">
+            <div><strong>Add a photo</strong><div class="small muted" id="photoName">The AI checks that the photo matches the text.</div></div>
+            <input type="file" id="photoInput" accept="image/*" capture="environment" class="hidden">
+          </div>
+
+          <label>Location <span class="muted small" id="wardLabel"></span></label>
+          <div id="pickMap" class="map"></div>
+          <div class="row" style="margin-top:8px">
+            <button type="button" class="btn btn--sm" id="geoBtn">📍 Use my location</button>
+            <span class="small muted">or tap the map to move the pin</span>
+          </div>
+
+          <div class="row">
+            <div class="grow"><label for="rName">Your name</label><input type="text" id="rName" maxlength="60" placeholder="Optional"></div>
+            <div class="grow"><label for="rPhone">Mobile (for SMS updates)</label><input type="tel" id="rPhone" maxlength="14" placeholder="Stored masked"></div>
+          </div>
+          <div class="row" style="margin-top:16px">
+            <button type="button" class="btn btn--ai" id="previewBtn">✨ Preview AI triage</button>
+            <button type="submit" class="btn btn--primary" id="submitBtn">Submit complaint</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="grid" style="align-content:start">
+        <div id="previewOut" class="hidden"></div>
+        <div id="ackOut" class="hidden"></div>
+        <div class="card">
+          <div class="card__head"><h2>Track a complaint</h2></div>
+          <div class="row">
+            <input type="text" id="trackId" class="grow" placeholder="IND-1192" aria-label="Ticket id">
+            <button class="btn" id="trackBtn">Track</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card__head"><div><h2>Ward report card</h2><p class="small muted">Public, live. Score = on-time fixes minus open breaches.</p></div></div>
+          <div class="table-wrap"><table id="wardTable"></table></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= COMMAND CENTER ======================= -->
+  <section class="view" id="view-command">
+    <div class="hero">
+      <div>
+        <h1>Indore Command Center</h1>
+        <p class="muted">Every complaint, every SLA, every escalation. The AI proposes and explains; the kernel decides.</p>
+      </div>
+      <div class="row">
+        <span class="small muted">Demo clock</span>
+        <button class="btn btn--sm" data-tick="6">+6 h</button>
+        <button class="btn btn--sm" data-tick="24">+24 h</button>
+        <button class="btn btn--sm" id="reseedBtn" title="Regenerate 14 days of demo data">↺ Reset demo</button>
+        <a class="btn btn--sm" id="csvBtn" href="/api/export.csv" title="Open data: no names, phones or free text">⬇ Open data CSV</a>
+      </div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+
+    <div class="grid cols-cc">
+      <div class="card">
+        <div class="card__head">
+          <div><h2>Live city map</h2><p class="small muted">Open complaints by status · rings are this week's hotspots</p></div>
+          <select id="mapFilter" aria-label="Filter map" style="width:auto">
+            <option value="open">Open</option><option value="breached">Breached</option><option value="all">All (incl. closed)</option>
+          </select>
+        </div>
+        <div id="cityMap" class="map map--big"></div>
+        <div class="legend">
+          <span><i class="dot" style="color:#7c3aed"></i>Human review</span>
+          <span><i class="dot" style="color:#2563eb"></i>Assigned</span>
+          <span><i class="dot" style="color:#d97706"></i>In progress</span>
+          <span><i class="dot" style="color:#dc2626"></i>Past SLA</span>
+          <span><i class="dot" style="color:#16a34a"></i>Resolved</span>
+        </div>
+      </div>
+      <div class="grid" style="align-content:start">
+        <div class="card brief">
+          <div class="card__head"><h2>✨ Commissioner's brief</h2><button class="btn btn--sm btn--ai" id="briefBtn">Generate</button></div>
+          <div class="brief__text" id="briefText">Click Generate for an AI-written summary of today's numbers. Every number comes from the kernel.</div>
+          <div class="small muted" id="briefSrc"></div>
+        </div>
+        <div class="card">
+          <div class="card__head"><div><h2>Human review queue</h2><p class="small muted">Low confidence, suspicious or out-of-bounds</p></div><span class="badge b-needs_review" id="reviewCount">0</span></div>
+          <div class="list" id="reviewList"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:16px">
+      <div class="card">
+        <div class="card__head"><div><h2>Hotspots this week</h2><p class="small muted">Ward × category, week on week</p></div></div>
+        <div class="list" id="hotspots"></div>
+      </div>
+      <div class="card">
+        <div class="card__head"><div><h2>Predicted SLA breaches</h2><p class="small muted">Queue-aware forecast per crew: act before the clock runs out</p></div></div>
+        <div class="list" id="predicted"></div>
+      </div>
+    </div>
+
+    <div class="grid cols-2" style="margin-top:16px">
+      <div class="card">
+        <div class="card__head"><h2>Departments</h2></div>
+        <div class="table-wrap"><table id="deptTable"></table></div>
+      </div>
+      <div class="card">
+        <div class="card__head"><div><h2>Reported vs resolved</h2><p class="small muted">Last 14 days</p></div></div>
+        <div class="chart" id="trend"></div>
+      </div>
+    </div>
+
+    <div class="grid cols-cc" style="margin-top:16px">
+      <div class="card">
+        <div class="card__head">
+          <h2>All complaints</h2>
+          <div class="row">
+            <select id="fStatus" style="width:auto" aria-label="Status filter">
+              <option value="open">Open</option><option value="">All</option><option value="needs_review">Review</option>
+              <option value="resolved">Resolved</option><option value="closed">Closed</option><option value="merged">Merged</option><option value="rejected">Rejected</option>
+            </select>
+            <select id="fCat" style="width:auto" aria-label="Category filter"><option value="">All categories</option></select>
+            <select id="fWard" style="width:auto" aria-label="Ward filter"><option value="">All wards</option></select>
+          </div>
+        </div>
+        <div class="table-wrap" style="max-height:460px;overflow:auto"><table id="ticketTable"></table></div>
+      </div>
+      <div class="card">
+        <div class="card__head"><div><h2>Audit log</h2><p class="small muted">Who proposed, who decided</p></div></div>
+        <div class="feed" id="feed"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= CREW ======================= -->
+  <section class="view" id="view-crew">
+    <div class="hero">
+      <div>
+        <h1>Field crew app</h1>
+        <p class="muted">A crew sees only its own queue, highest risk first. Marking work done needs a geotagged proof within 200 m of the complaint.</p>
+      </div>
+      <div class="row"><label for="crewSel" style="margin:0">Crew</label><select id="crewSel" style="width:auto"></select></div>
+    </div>
+    <div class="grid cols-2">
+      <div class="card">
+        <div class="card__head"><h2>My queue</h2><span class="badge b-assigned" id="crewCount">0</span></div>
+        <div class="list" id="crewList" style="max-height:620px"></div>
+      </div>
+      <div class="card">
+        <div class="card__head"><h2>Job</h2></div>
+        <div id="crewJob" class="muted">Pick a job from the queue.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================= HOW ======================= -->
+  <section class="view" id="view-how">
+    <div class="hero"><div>
+      <h1>The AI proposes. The kernel decides.</h1>
+      <p class="muted">Language models are excellent at reading a messy Hinglish complaint and a blurry photo. They should never be the
+        thing that decides whether a live wire outside a school waits 12 hours or 48, or whether a ticket is closed.
+        NagarSetu splits those jobs.</p>
+    </div></div>
+    <div class="flow">
+      <div class="card"><div class="n">01</div><h3>Citizen reports</h3><p class="small">Text, voice or photo, in Hindi, English or Hinglish, from a phone. Location pin snaps to a ward.</p></div>
+      <div class="card"><div class="n">02</div><h3>AI proposes</h3><p class="small">Claude extracts category, severity, hazards and a bilingual summary, and flags spam or prompt-injection. Output is a schema-checked proposal.</p></div>
+      <div class="card"><div class="n">03</div><h3>Kernel decides</h3><p class="small">Deterministic rules from <span class="mono">policy.json</span>: hazard floors, SLA, department, human-review gates, duplicate merge.</p></div>
+      <div class="card"><div class="n">04</div><h3>Crew fixes</h3><p class="small">Least-loaded crew in the zone gets it. "Done" needs geotagged proof near the site.</p></div>
+      <div class="card"><div class="n">05</div><h3>Citizen closes</h3><p class="small">Only the citizen confirms or reopens (auto-close after 48 h). Reopen escalates. Breaches climb the ladder.</p></div>
+    </div>
+    <div class="grid cols-2" style="margin-top:16px">
+      <div class="card">
+        <div class="card__head"><h2>Kernel rules (live from policy.json)</h2></div>
+        <div class="table-wrap"><table class="ruletable" id="ruleTable"></table></div>
+      </div>
+      <div class="card">
+        <div class="card__head"><h2>SLA matrix (hours)</h2></div>
+        <div class="table-wrap"><table id="slaTable"></table></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="drawer" aria-label="Complaint details">
+  <div class="drawer__head"><div id="dHead"></div><button class="iconbtn" id="dClose" aria-label="Close">✕</button></div>
+  <div class="drawer__body" id="dBody"></div>
+</aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="/static/app.js"></script>
+<script src="/static/tour.js"></script>
+</body>
+</html>
