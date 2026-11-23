@@ -65,7 +65,7 @@ def create_app(db_path: str | None = None, auto_seed: bool = True) -> FastAPI:
     @app.get("/api/meta")
     def meta():
         pol = policy()
-        return {"mode": svc.triage.mode, "now": store.now(),
+        return {"mode": svc.triage.mode, "ai_error": svc.triage.last_error, "now": store.now(),
                 "categories": pol["categories"], "departments": pol["departments"],
                 "hazards": pol["hazards"], "wards": city()["wards"], "policy": pol,
                 "crews": svc.crews}

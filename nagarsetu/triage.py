@@ -12,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 import re
+import sys
 
 MODEL = os.environ.get("NAGARSETU_MODEL", "claude-opus-5-5")
 
@@ -90,19 +91,31 @@ class Triage:
         if schema:
             output_config["format"] = {"type": "json_schema", "schema": schema}
         try:
-            resp = self.client.beta.messages.create(
-                **kwargs, output_config=output_config,
-                betas=["server-side-fallback-2026-07-01"], fallbacks="default")
-        except (anthropic.BadRequestError, TypeError):
             try:
+                resp = self.client.beta.messages.create(
+                    **kwargs, output_config=output_config,
+                    betas=["server-side-fallback-2026-07-01"], fallbacks="default")
+            except (anthropic.BadRequestError, TypeError) as first:
+                self._note(first)
                 resp = self.client.messages.create(**kwargs, output_config=output_config)
-            except anthropic.APIError:
-                return None
-        except anthropic.APIError:
+        except Exception as e:  # network, auth, rate limit, SDK mismatch: fall back, but say why
+            self._note(e)
             return None
         if resp.stop_reason == "refusal":
+            self._note(RuntimeError("refusal"))
             return None
+        self.last_error = None
         return "".join(b.text for b in resp.content if getattr(b, "type", "") == "text") or None
+
+    last_error: str | None = None
+
+    def _note(self, e: Exception) -> None:
+        status = getattr(e, "status_code", None)
+        msg = str(getattr(e, "message", "") or e)[:160]
+        if "sk-ant" in msg:
+            msg = "(message withheld)"
+        self.last_error = f"{type(e).__name__}{f' {status}' if status else ''}: {msg}"
+        print(f"[nagarsetu] AI call failed, using offline fallback: {self.last_error}", file=sys.stderr, flush=True)
 
     def classify(self, text: str, photo_data_url: str | None = None) -> dict:
         content: list = []
